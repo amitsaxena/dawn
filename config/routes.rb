@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resources :ratings
+
   get 'home/index'
 
   devise_for :users
