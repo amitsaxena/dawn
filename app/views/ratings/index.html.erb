@@ -1,1 +1,54 @@
-<%= @rating? @rating.value: 0 %>
+<div class="col-lg-6 center-block" style="float:none;">
+<input type="text" value="<%= @rating? @rating.value: 5 %>" class="dial" data-width="500" />
+</div>
+
+<div style="padding-bottom: 300px;"></div>
+
+<script>
+  <% if @rating
+       if(@rating.value < 4)
+         color = "#FF0000"
+       elsif(@rating.value > 6)
+         color = "#00FF00"
+       else
+         color = "#FFEC03"
+       end
+     else
+       color = "#FFEC03"
+     end
+  %>
+    $(function() {
+        $(".dial").knob({
+          'min': '0',
+          'max': '10',
+          'angleOffset': '-60',
+          'angleArc': '120',
+          'fgColor': '<%= color %>',
+          'change' : function (v) {
+            if(v < 4)
+              red();
+            else if(v > 6)
+              green();
+            else
+              yellow();
+            update_rating(v);
+          }
+        });
+    });
+
+    function red() {$('.dial').trigger('configure', {"fgColor":"#FF0000", "inputColor":"#FF0000"});}
+    function yellow() {$('.dial').trigger('configure', {"fgColor":"#FFEC03", "inputColor":"#FFEC03"});}
+    function green() {$('.dial').trigger('configure', {"fgColor":"#00FF00", "inputColor":"#00FF00"});}
+    function update_rating(val)
+    {
+      $.ajax({
+        type: "POST",
+        url: '/ratings',
+        dataType: "JSON",
+        data: {'rating': Math.round(val)},
+        error: function(data) {
+          alert('There was some problem while saving your rating. Please refresh the page and retry.');
+        }
+      });
+    }
+</script>
